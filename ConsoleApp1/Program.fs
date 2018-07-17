@@ -5,5 +5,6 @@ open System
 [<EntryPoint>]
 let main argv =
     let c = PillowfortFs.PillowfortClientFactory.login "user@example.com" "password" |> Async.RunSynchronously
-    printfn "%s" c.Cookie
+    let n = c.AsyncWhoami |> Async.RunSynchronously
+    printfn "%s" n
     0 // return an integer exit code
