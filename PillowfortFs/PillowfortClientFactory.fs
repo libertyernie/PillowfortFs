@@ -36,20 +36,20 @@ module PillowfortClientFactory =
         let! authenticity_token = get_authenticity_token cookies
         
         let req = WebRequest.CreateHttp("https://pillowfort.io/users/sign_in", CookieContainer = cookies, UserAgent = ua, Method = "POST", ContentType = "application/x-www-form-urlencoded")
-        
+
+        let parameters = [
+            sprintf "%s=%s" "utf8" (WebUtility.UrlEncode "✓")
+            sprintf "%s=%s" "authenticity_token" (WebUtility.UrlEncode authenticity_token)
+            sprintf "%s=%s" "user[email]" (WebUtility.UrlEncode username)
+            sprintf "%s=%s" "user[password]" (WebUtility.UrlEncode password)
+            sprintf "%s=%s" "user[remember_me]" "0"
+            "commit=Log+in"
+        ]
+        let requestBody = String.concat "&" parameters
+
         // Write to request body
         // I do this in a separate scope so the stream is automatically flushed and can't be used later.
         do! async {
-            let parameters = [
-                sprintf "%s=%s" "utf8" (WebUtility.UrlEncode "✓")
-                sprintf "%s=%s" "authenticity_token" (WebUtility.UrlEncode authenticity_token)
-                sprintf "%s=%s" "user[email]" (WebUtility.UrlEncode username)
-                sprintf "%s=%s" "user[password]" (WebUtility.UrlEncode password)
-                sprintf "%s=%s" "user[remember_me]" "0"
-                "commit=Log+in"
-            ]
-            let requestBody = String.concat "&" parameters
-            
             use! reqStream = req.GetRequestStreamAsync() |> Async.AwaitTask
 
             use sw = new StreamWriter(reqStream, Encoding.UTF8)
