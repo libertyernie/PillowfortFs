@@ -6,7 +6,8 @@ open System.Net
 open System.Text
 open System.Text.RegularExpressions
 
-exception PillowfortClientFactoryException of string
+type PillowfortClientFactoryException(message: string) =
+    inherit ApplicationException(message)
 
 module PillowfortClientFactory =
     let pillowfail str = raise (PillowfortClientFactoryException str)

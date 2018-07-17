@@ -4,8 +4,10 @@ open System
 open System.Net
 open System.IO
 open System.Text.RegularExpressions
+open System.Threading.Tasks
 
-exception PillowfortClientException of string
+type PillowfortClientException(message: string) =
+    inherit ApplicationException(message)
 
 type PillowfortClient() =
     let pillowfail str = raise (PillowfortClientException str)
@@ -34,5 +36,14 @@ type PillowfortClient() =
         return m.Groups.[1].Value
     }
 
-    member this.Whoami = Async.RunSynchronously this.AsyncWhoami
-    member this.WhoamiAsync = Async.StartAsTask this.AsyncWhoami
+    member __.AsyncSignout = async {
+        let req = createRequest "https://pillowfort.io/signout"
+        use! resp = req.AsyncGetResponse()
+        return ignore resp
+    }
+
+    member this.Whoami() = Async.RunSynchronously this.AsyncWhoami
+    member this.WhoamiAsync() = Async.StartAsTask this.AsyncWhoami
+
+    member this.Signout() = Async.RunSynchronously this.AsyncSignout
+    member this.SignoutAsync() = Async.StartAsTask this.AsyncSignout :> Task
