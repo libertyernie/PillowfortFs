@@ -28,12 +28,11 @@ promise I'll try to fix it.
         return username;
     }
 
-### Visual Basic
+Visual Basic usage is similar to C#.
 
-    Imports PillowfortFs
+### Other languages
 
-    Async Function f() As Task(Of String)
-        Dim client = Await PillowfortClientFactory.LoginAsync(username, password)
-        Dim username = Await client.WhoamiAsync()
-        Return username
-    End Function
+The library also makes non-async methods available, which use
+[Async.RunSynchronously](https://msdn.microsoft.com/en-us/visualfsharpdocs/conceptual/async.runsynchronously%5B%27t%5D-method-%5Bfsharp%5D)
+under the hood. These methods are not guaranteed to work in all environments;
+use the async versions if you can.
