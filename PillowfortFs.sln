@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27703.2042
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "PillowfortFs", "PillowfortFs\PillowfortFs.fsproj", "{A2D05EE3-194C-492D-A7D3-1E5839A41597}"
+EndProject
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "ConsoleApp1", "ConsoleApp1\ConsoleApp1.fsproj", "{6E7448FD-C63D-45BB-93CE-236970B4D052}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A2D05EE3-194C-492D-A7D3-1E5839A41597}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A2D05EE3-194C-492D-A7D3-1E5839A41597}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A2D05EE3-194C-492D-A7D3-1E5839A41597}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A2D05EE3-194C-492D-A7D3-1E5839A41597}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6E7448FD-C63D-45BB-93CE-236970B4D052}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E7448FD-C63D-45BB-93CE-236970B4D052}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6E7448FD-C63D-45BB-93CE-236970B4D052}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E7448FD-C63D-45BB-93CE-236970B4D052}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {11C1B7E5-40B7-4246-B41C-90FCE0C32413}
+	EndGlobalSection
+EndGlobal
