@@ -10,11 +10,11 @@ type PillowfortClientFactoryException(message: string) =
     inherit ApplicationException(message)
 
 module PillowfortClientFactory =
-    let pillowfail str = raise (PillowfortClientFactoryException str)
+    let private pillowfail str = raise (PillowfortClientFactoryException str)
 
-    let ua = "PillowfortFs/0.1 (https://github.com/libertyernie)"
+    let private ua = "PillowfortFs/0.1 (https://github.com/libertyernie)"
 
-    let get_authenticity_token cookies = async {
+    let private get_authenticity_token cookies = async {
         let req = WebRequest.CreateHttp("https://pillowfort.io/users/sign_in", CookieContainer = cookies, UserAgent = ua)
         
         use! response = req.AsyncGetResponse()
@@ -29,7 +29,7 @@ module PillowfortClientFactory =
         return m.Groups.[1].Value
     }
 
-    let login username password = async {
+    let AsyncLogin username password = async {
         // Create a container to keep cookies between requests
         let cookies = new CookieContainer()
 
@@ -69,5 +69,5 @@ module PillowfortClientFactory =
         return new PillowfortClient(Cookie = cookie.Value)
     }
 
-    let CreateClient u p = login u p |> Async.RunSynchronously
-    let CreateClientAsync u p = login u p |> Async.StartAsTask
+    let CreateClient u p = AsyncLogin u p |> Async.RunSynchronously
+    let CreateClientAsync u p = AsyncLogin u p |> Async.StartAsTask

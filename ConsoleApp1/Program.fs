@@ -4,7 +4,7 @@ open System
 
 [<EntryPoint>]
 let main argv =
-    let c = PillowfortFs.PillowfortClientFactory.login "user@example.com" "password" |> Async.RunSynchronously
+    let c = PillowfortFs.PillowfortClientFactory.AsyncLogin "user@example.com" "password" |> Async.RunSynchronously
     let n = c.AsyncGetAvatar |> Async.RunSynchronously
     printfn "%s" n
     c.AsyncSignout |> Async.RunSynchronously
