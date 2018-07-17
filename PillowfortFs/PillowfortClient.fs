@@ -12,6 +12,8 @@ type PillowfortClientException(message: string) =
 type PillowfortClient() =
     let pillowfail str = raise (PillowfortClientException str)
 
+    let defaultAvatarUrl = "https://www.gravatar.com/avatar/00000000000000000000000000000000?f=y&d=mp"
+
     let cookies = new CookieContainer()
     let cookie_wrapper = new SingleCookieWrapper(cookies, new Uri("https://pillowfort.io"), "_Pillowfort_session")
 
@@ -31,7 +33,7 @@ type PillowfortClient() =
         let! html = sr.ReadToEndAsync() |> Async.AwaitTask
         let m = Regex.Match(html, """value="([^"]+)" name="user\[username\]" """)
         if not m.Success then
-            pillowfail "Could not find username on /edit/username page"
+            pillowfail "Could not find username on /edit/username page (are you logged in?)"
 
         return m.Groups.[1].Value
     }
@@ -44,10 +46,7 @@ type PillowfortClient() =
 
         let! html = sr.ReadToEndAsync() |> Async.AwaitTask
         let m = Regex.Match(html, """http://s3.amazonaws.com/pillowfortmedia/settings/avatars/[^"]+""")
-        if not m.Success then
-            pillowfail "Could not find avatar on /settings page"
-
-        return m.Value
+        return if m.Success then m.Value else defaultAvatarUrl
     }
 
     member __.AsyncSignout = async {
