@@ -36,6 +36,20 @@ type PillowfortClient() =
         return m.Groups.[1].Value
     }
 
+    member __.AsyncGetAvatar = async {
+        let req = createRequest "https://pillowfort.io/settings"
+
+        use! resp = req.AsyncGetResponse()
+        use sr = new StreamReader(resp.GetResponseStream())
+
+        let! html = sr.ReadToEndAsync() |> Async.AwaitTask
+        let m = Regex.Match(html, """http://s3.amazonaws.com/pillowfortmedia/settings/avatars/[^"]+""")
+        if not m.Success then
+            pillowfail "Could not find avatar on /settings page"
+
+        return m.Value
+    }
+
     member __.AsyncSignout = async {
         let req = createRequest "https://pillowfort.io/signout"
         use! resp = req.AsyncGetResponse()
@@ -44,6 +58,9 @@ type PillowfortClient() =
 
     member this.Whoami() = Async.RunSynchronously this.AsyncWhoami
     member this.WhoamiAsync() = Async.StartAsTask this.AsyncWhoami
+
+    member this.GetAvatar() = Async.RunSynchronously this.AsyncGetAvatar
+    member this.GetAvatarAsync() = Async.StartAsTask this.AsyncGetAvatar
 
     member this.Signout() = Async.RunSynchronously this.AsyncSignout
     member this.SignoutAsync() = Async.StartAsTask this.AsyncSignout :> Task
