@@ -7,6 +7,8 @@ Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "PillowfortFs", "PillowfortF
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "ConsoleApp1", "ConsoleApp1\ConsoleApp1.fsproj", "{6E7448FD-C63D-45BB-93CE-236970B4D052}"
 EndProject
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "WinFormsDemo", "WinFormsDemo\WinFormsDemo.vbproj", "{B271D0A0-6EDA-4B26-AFEA-54E679ABBA95}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{6E7448FD-C63D-45BB-93CE-236970B4D052}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6E7448FD-C63D-45BB-93CE-236970B4D052}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6E7448FD-C63D-45BB-93CE-236970B4D052}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B271D0A0-6EDA-4B26-AFEA-54E679ABBA95}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B271D0A0-6EDA-4B26-AFEA-54E679ABBA95}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B271D0A0-6EDA-4B26-AFEA-54E679ABBA95}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B271D0A0-6EDA-4B26-AFEA-54E679ABBA95}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
