@@ -29,7 +29,7 @@ Public Class Form1
 
     Private Sub Form1_FormClosing(sender As Object, e As FormClosingEventArgs) Handles MyBase.FormClosing
         If _client IsNot Nothing Then
-            _client.Signout()
+            _client.SignoutAsync().GetAwaiter().GetResult()
         End If
     End Sub
 End Class

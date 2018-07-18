@@ -5,6 +5,7 @@ open System.Net
 open System.IO
 open System.Text.RegularExpressions
 open System.Threading.Tasks
+open Newtonsoft.Json
 
 type PillowfortClientException(message: string) =
     inherit ApplicationException(message)
@@ -49,17 +50,26 @@ type PillowfortClient() =
         return if m.Success then m.Value else defaultAvatarUrl
     }
 
+    member this.AsyncGetPosts page = async {
+        let! username = this.AsyncWhoami
+
+        let url = sprintf " https://pillowfort.io/%s/json/?p=%d" (WebUtility.UrlEncode(username)) page
+        let req = createRequest url
+
+        use! resp = req.AsyncGetResponse()
+        use sr = new StreamReader(resp.GetResponseStream())
+
+        let! json = sr.ReadToEndAsync() |> Async.AwaitTask
+        return JsonConvert.DeserializeObject<PillowfortPostsResponse>(json)
+    }
+
     member __.AsyncSignout = async {
         let req = createRequest "https://pillowfort.io/signout"
         use! resp = req.AsyncGetResponse()
         return ignore resp
     }
-
-    member this.Whoami() = Async.RunSynchronously this.AsyncWhoami
+    
     member this.WhoamiAsync() = Async.StartAsTask this.AsyncWhoami
-
-    member this.GetAvatar() = Async.RunSynchronously this.AsyncGetAvatar
     member this.GetAvatarAsync() = Async.StartAsTask this.AsyncGetAvatar
-
-    member this.Signout() = Async.RunSynchronously this.AsyncSignout
+    member this.GetPostsAsync page = Async.StartAsTask (this.AsyncGetPosts page)
     member this.SignoutAsync() = Async.StartAsTask this.AsyncSignout :> Task
