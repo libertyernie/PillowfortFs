@@ -5,8 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="Post.fs" />
     <Compile Include="SingleCookieWrapper.fs" />
+    <Compile Include="AuthenticityToken.fs" />
+    <Compile Include="Post.fs" />
+    <Compile Include="Request.fs" />
     <Compile Include="PillowfortClient.fs" />
     <Compile Include="PillowfortClientFactory.fs" />
   </ItemGroup>

@@ -63,6 +63,109 @@ type PillowfortClient() =
         return JsonConvert.DeserializeObject<PillowfortPostsResponse>(json)
     }
 
+    member __.AsyncSubmitPhotoPost (post: PhotoPostRequest) = async {
+        if post.tags |> Seq.exists (fun t -> t.Contains(",")) then
+            invalidArg "post" "Commas are not allowed in tags"
+
+        // Get the server-generated token for the form submission
+        let! a = AuthenticityToken.get_authenticity_token "https://pillowfort.io/posts/new" cookies
+
+        let authenticity_token =
+            match a with
+            | Some s -> s
+            | None -> pillowfail "Authenticity token not found"
+
+        // multipart separators
+        let h1 = sprintf "-----------------------------%d" DateTime.UtcNow.Ticks
+        let h2 = sprintf "--%s" h1
+        let h3 = sprintf "--%s--" h1
+
+        let req = createRequest "https://pillowfort.io/posts/create"
+        req.Method <- "POST"
+        req.ContentType <- sprintf "multipart/form-data; boundary=%s" h1
+
+        do! async {
+            use! reqStream = req.GetRequestStreamAsync() |> Async.AwaitTask
+            use sw = new StreamWriter(reqStream)
+
+            let w (s: string) = sw.WriteLineAsync s |> Async.AwaitTask
+
+            do! w h2
+            do! w "Content-Disposition: form-data; name=\"utf8\""
+            do! w ""
+            do! w "✓"
+            do! w h2
+            do! w "Content-Disposition: form-data; name=\"authenticity_token\""
+            do! w ""
+            do! w authenticity_token
+            do! w h2
+            do! w "Content-Disposition: form-data; name=\"post_to\""
+            do! w ""
+            do! w "current_user"
+            do! w h2
+            do! w "Content-Disposition: form-data; name=\"post_type\""
+            do! w ""
+            do! w "picture"
+            do! w h2
+            do! w "Content-Disposition: form-data; name=\"title\""
+            do! w ""
+            do! w post.title
+            do! w h2
+            do! w "Content-Disposition: form-data; name=\"picture[][file]\"; filename=\"\""
+            do! w "Content-Type: application/octet-stream"
+            do! w ""
+            do! w ""
+            do! w h2
+            do! w "Content-Disposition: form-data; name=\"picture[][pic_url]\""
+            do! w ""
+            do! w post.pic_url
+            do! w h2
+            do! w "Content-Disposition: form-data; name=\"picture[][row]\""
+            do! w ""
+            do! w "1"
+            do! w h2
+            do! w "Content-Disposition: form-data; name=\"picture[][col]\""
+            do! w ""
+            do! w "0"
+            do! w h2
+            do! w "Content-Disposition: form-data; name=\"content\""
+            do! w ""
+            do! w post.content
+            do! w h2
+            do! w "Content-Disposition: form-data; name=\"tags\""
+            do! w ""
+            do! w (String.concat "," post.tags)
+            do! w h2
+            do! w "Content-Disposition: form-data; name=\"privacy\""
+            do! w ""
+            do! w post.privacy
+            if post.commentable then
+                do! w h2
+                do! w "Content-Disposition: form-data; name=\"commentable\""
+                do! w ""
+                do! w "on"
+            if post.rebloggable then
+                do! w h2
+                do! w "Content-Disposition: form-data; name=\"rebloggable\""
+                do! w ""
+                do! w "on"
+            if post.nsfw then
+                do! w h2
+                do! w "Content-Disposition: form-data; name=\"nsfw\""
+                do! w ""
+                do! w "on"
+            do! w h2
+            do! w "Content-Disposition: form-data; name=\"commit\""
+            do! w ""
+            do! w "Submit"
+            do! w h3
+            do! w ""
+        }
+        
+        use! resp = req.AsyncGetResponse()
+        return ignore resp
+    }
+
     member __.AsyncSignout = async {
         let req = createRequest "https://pillowfort.io/signout"
         use! resp = req.AsyncGetResponse()
@@ -72,4 +175,5 @@ type PillowfortClient() =
     member this.WhoamiAsync() = Async.StartAsTask this.AsyncWhoami
     member this.GetAvatarAsync() = Async.StartAsTask this.AsyncGetAvatar
     member this.GetPostsAsync page = Async.StartAsTask (this.AsyncGetPosts page)
+    member this.SubmitPhotoPostAsync post = Async.StartAsTask (this.AsyncSubmitPhotoPost post) :> Task
     member this.SignoutAsync() = Async.StartAsTask this.AsyncSignout :> Task

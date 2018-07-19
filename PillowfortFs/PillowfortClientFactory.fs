@@ -14,27 +14,17 @@ module PillowfortClientFactory =
 
     let private ua = "PillowfortFs/0.1 (https://github.com/libertyernie)"
 
-    let private get_authenticity_token cookies = async {
-        let req = WebRequest.CreateHttp("https://pillowfort.io/users/sign_in", CookieContainer = cookies, UserAgent = ua)
-        
-        use! response = req.AsyncGetResponse()
-        use sr = new StreamReader(response.GetResponseStream())
-        let! contents = sr.ReadToEndAsync() |> Async.AwaitTask
-        
-        let m = Regex.Match(contents, """<input type="hidden" name="authenticity_token" value="([^"]+)" """)
-
-        if not m.Success then
-            pillowfail "No authenticity_token found"
-
-        return m.Groups.[1].Value
-    }
-
     let AsyncLogin username password = async {
         // Create a container to keep cookies between requests
         let cookies = new CookieContainer()
 
         // Get the server-generated token for the form submission
-        let! authenticity_token = get_authenticity_token cookies
+        let! a = AuthenticityToken.get_authenticity_token "https://pillowfort.io/users/sign_in" cookies
+
+        let authenticity_token =
+            match a with
+            | Some s -> s
+            | None -> pillowfail "Authenticity token not found"
         
         let req = WebRequest.CreateHttp("https://pillowfort.io/users/sign_in", CookieContainer = cookies, UserAgent = ua, Method = "POST", ContentType = "application/x-www-form-urlencoded")
 
