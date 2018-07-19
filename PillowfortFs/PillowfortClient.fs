@@ -90,6 +90,12 @@ type PillowfortClient() =
 
             let w (s: string) = sw.WriteLineAsync s |> Async.AwaitTask
 
+            let privacy =
+                match post.privacy with
+                | PrivacyLevel.Public -> "public"
+                | PrivacyLevel.Followers -> "followers"
+                | _ -> "private"
+
             do! w h2
             do! w "Content-Disposition: form-data; name=\"utf8\""
             do! w ""
@@ -138,7 +144,7 @@ type PillowfortClient() =
             do! w h2
             do! w "Content-Disposition: form-data; name=\"privacy\""
             do! w ""
-            do! w post.privacy
+            do! w privacy
             if post.commentable then
                 do! w h2
                 do! w "Content-Disposition: form-data; name=\"commentable\""
