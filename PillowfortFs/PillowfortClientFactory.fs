@@ -4,7 +4,6 @@ open System
 open System.IO
 open System.Net
 open System.Text
-open System.Text.RegularExpressions
 
 type PillowfortClientFactoryException(message: string) =
     inherit ApplicationException(message)

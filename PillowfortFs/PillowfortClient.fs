@@ -63,7 +63,7 @@ type PillowfortClient() =
         return JsonConvert.DeserializeObject<PillowfortPostsResponse>(json)
     }
 
-    member __.AsyncSubmitPhotoPost (post: PhotoPostRequest) = async {
+    member __.AsyncSubmitPost (post: PostRequest) = async {
         if post.tags |> Seq.exists (fun t -> t.Contains(",")) then
             invalidArg "post" "Commas are not allowed in tags"
 
@@ -111,28 +111,33 @@ type PillowfortClient() =
             do! w h2
             do! w "Content-Disposition: form-data; name=\"post_type\""
             do! w ""
-            do! w "picture"
+            match post.media with
+            | None -> do! w "text"
+            | Some (PhotoMedia _) -> do! w "picture"
             do! w h2
             do! w "Content-Disposition: form-data; name=\"title\""
             do! w ""
             do! w post.title
-            do! w h2
-            do! w "Content-Disposition: form-data; name=\"picture[][file]\"; filename=\"\""
-            do! w "Content-Type: application/octet-stream"
-            do! w ""
-            do! w ""
-            do! w h2
-            do! w "Content-Disposition: form-data; name=\"picture[][pic_url]\""
-            do! w ""
-            do! w post.pic_url
-            do! w h2
-            do! w "Content-Disposition: form-data; name=\"picture[][row]\""
-            do! w ""
-            do! w "1"
-            do! w h2
-            do! w "Content-Disposition: form-data; name=\"picture[][col]\""
-            do! w ""
-            do! w "0"
+            match post.media with
+            | None -> ()
+            | Some (PhotoMedia url) ->
+                do! w h2
+                do! w "Content-Disposition: form-data; name=\"picture[][file]\"; filename=\"\""
+                do! w "Content-Type: application/octet-stream"
+                do! w ""
+                do! w ""
+                do! w h2
+                do! w "Content-Disposition: form-data; name=\"picture[][pic_url]\""
+                do! w ""
+                do! w url
+                do! w h2
+                do! w "Content-Disposition: form-data; name=\"picture[][row]\""
+                do! w ""
+                do! w "1"
+                do! w h2
+                do! w "Content-Disposition: form-data; name=\"picture[][col]\""
+                do! w ""
+                do! w "0"
             do! w h2
             do! w "Content-Disposition: form-data; name=\"content\""
             do! w ""
@@ -181,5 +186,5 @@ type PillowfortClient() =
     member this.WhoamiAsync() = Async.StartAsTask this.AsyncWhoami
     member this.GetAvatarAsync() = Async.StartAsTask this.AsyncGetAvatar
     member this.GetPostsAsync page = Async.StartAsTask (this.AsyncGetPosts page)
-    member this.SubmitPhotoPostAsync post = Async.StartAsTask (this.AsyncSubmitPhotoPost post) :> Task
+    member this.SubmitPostAsync post = Async.StartAsTask (this.AsyncSubmitPost post) :> Task
     member this.SignoutAsync() = Async.StartAsTask this.AsyncSignout :> Task
