@@ -58,5 +58,4 @@ module PillowfortClientFactory =
         return new PillowfortClient(Cookie = cookie.Value)
     }
 
-    let CreateClient u p = AsyncLogin u p |> Async.RunSynchronously
-    let CreateClientAsync u p = AsyncLogin u p |> Async.StartAsTask
+    let LoginAsync u p = AsyncLogin u p |> Async.StartAsTask

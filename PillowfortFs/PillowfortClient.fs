@@ -50,9 +50,7 @@ type PillowfortClient() =
         return if m.Success then m.Value else defaultAvatarUrl
     }
 
-    member this.AsyncGetPosts page = async {
-        let! username = this.AsyncWhoami
-
+    member __.AsyncGetPosts username page = async {
         let url = sprintf " https://pillowfort.io/%s/json/?p=%d" (WebUtility.UrlEncode(username)) page
         let req = createRequest url
 
@@ -185,6 +183,6 @@ type PillowfortClient() =
     
     member this.WhoamiAsync() = Async.StartAsTask this.AsyncWhoami
     member this.GetAvatarAsync() = Async.StartAsTask this.AsyncGetAvatar
-    member this.GetPostsAsync page = Async.StartAsTask (this.AsyncGetPosts page)
+    member this.GetPostsAsync username page = Async.StartAsTask (this.AsyncGetPosts username page)
     member this.SubmitPostAsync post = Async.StartAsTask (this.AsyncSubmitPost post) :> Task
     member this.SignoutAsync() = Async.StartAsTask this.AsyncSignout :> Task

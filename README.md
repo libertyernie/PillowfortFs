@@ -1,7 +1,17 @@
 # PillowfortFs
 
-An F# / .NET library for logging into https://pillowfort.io and getting your
-username, avatar, and posts.
+An F# / .NET library for logging into https://pillowfort.io.
+
+Features:
+* Scraping username and avatar
+* Listing posts by user
+* Creating text posts
+* Creating photo posts from an existing URL
+
+Not supported:
+* Audio/video posts
+* Uploading photos
+* Other features
 
 This will probably break at some point as the site is updated and I can't
 promise I'll try to fix it.
@@ -15,24 +25,36 @@ promise I'll try to fix it.
     let f = async {
         let! client = PillowfortClientFactory.AsyncLogin username password
         let! username = client.AsyncWhoami
-        return username
+        do! c.AsyncSubmitPost {
+            title = "Post #1"
+            content = "This is a photo post"
+            tags = ["test1"; "test2"]
+            privacy = PrivacyLevel.Private
+            rebloggable = true
+            commentable = true
+            nsfw = false
+            media = Some (PhotoMedia "https://www.example.com/image.png")
+        }
     }
 
 ### C#
 
     using PillowfortFs;
+    using System.Threading.Tasks;
 
-    Task<string> f() {
+    async Task f() {
         var client = await PillowfortClientFactory.LoginAsync(username, password);
         var username = await client.WhoamiAsync();
-        return username;
+        await client.SubmitPostAsync(
+            new PostRequest(
+                title: "Post #1",
+                content: "This is a photo post",
+                tags: new [] { "test1", "test2" },
+                privacy: PrivacyLevel.Private,
+                rebloggable: true,
+                commentable: true,
+                nsfw: false,
+                media: PillowfortMediaBuilder.Photo("https://www.example.com/image.png")));
     }
 
 Visual Basic usage is similar to C#.
-
-### Other languages
-
-The library also makes non-async methods available, which use
-[Async.RunSynchronously](https://msdn.microsoft.com/en-us/visualfsharpdocs/conceptual/async.runsynchronously%5B%27t%5D-method-%5Bfsharp%5D)
-under the hood. These methods are not guaranteed to work in all environments;
-use the async versions if you can.

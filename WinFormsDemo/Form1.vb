@@ -5,17 +5,23 @@ Public Class Form1
     Private _client As PillowfortClient
 
     Private Async Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
-        _client = Await PillowfortClientFactory.CreateClientAsync(TextBox1.Text, TextBox2.Text)
-        Label1.Text = Await _client.WhoamiAsync()
+        Try
+            _client = Await PillowfortClientFactory.LoginAsync(TextBox1.Text, TextBox2.Text)
+            Label1.Text = Await _client.WhoamiAsync()
+        Catch ex As PillowfortClientFactoryException
+            MsgBox(ex.Message)
+        End Try
 
-        Dim avatarUrl = Await _client.GetAvatarAsync()
-        Dim req = WebRequest.CreateHttp(avatarUrl)
-        Using resp = Await req.GetResponseAsync()
-            Using stream = resp.GetResponseStream()
-                Dim i = Image.FromStream(stream)
-                PictureBox1.Image = i
+        If _client IsNot Nothing Then
+            Dim avatarUrl = Await _client.GetAvatarAsync()
+            Dim req = WebRequest.CreateHttp(avatarUrl)
+            Using resp = Await req.GetResponseAsync()
+                Using stream = resp.GetResponseStream()
+                    Dim i = Image.FromStream(stream)
+                    PictureBox1.Image = i
+                End Using
             End Using
-        End Using
+        End If
     End Sub
 
     Private Async Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click
