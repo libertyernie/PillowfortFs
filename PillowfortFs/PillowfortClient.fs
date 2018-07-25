@@ -175,6 +175,13 @@ type PillowfortClient() =
         return ignore resp
     }
 
+    member __.AsyncDeletePost id = async {
+        let req = sprintf "https://pillowfort.io/posts/%d/destroy" id |> createRequest
+        req.Method <- "POST"
+        use! resp = req.AsyncGetResponse()
+        return ignore resp
+    }
+
     member __.AsyncSignout = async {
         let req = createRequest "https://pillowfort.io/signout"
         use! resp = req.AsyncGetResponse()
@@ -185,4 +192,5 @@ type PillowfortClient() =
     member this.GetAvatarAsync() = Async.StartAsTask this.AsyncGetAvatar
     member this.GetPostsAsync username page = Async.StartAsTask (this.AsyncGetPosts username page)
     member this.SubmitPostAsync post = Async.StartAsTask (this.AsyncSubmitPost post) :> Task
+    member this.DeletePostAsync id = Async.StartAsTask (this.AsyncDeletePost id) :> Task
     member this.SignoutAsync() = Async.StartAsTask this.AsyncSignout :> Task
