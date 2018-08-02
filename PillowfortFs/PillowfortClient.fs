@@ -13,13 +13,16 @@ type PillowfortClientException(message: string) =
 type PillowfortClient() =
     let pillowfail str = raise (PillowfortClientException str)
 
-    let defaultAvatarUrl = "https://www.gravatar.com/avatar/00000000000000000000000000000000?f=y&d=mp"
-
     let cookies = new CookieContainer()
     let cookie_wrapper = new SingleCookieWrapper(cookies, new Uri("https://pillowfort.io"), "_Pillowfort_session")
 
     let createRequest (url: string) =
         WebRequest.CreateHttp(url, UserAgent = "PillowfortFs/0.1 (https://github.com/libertyernie)", CookieContainer = cookies)
+
+    let asyncOptionDefault (d: 'a) (w: Async<'a option>) = async {
+        let! o = w
+        return Option.defaultValue d o
+    }
 
     member __.Cookie
         with get() = cookie_wrapper.getCookieValue() |> Option.defaultValue null
@@ -47,7 +50,7 @@ type PillowfortClient() =
 
         let! html = sr.ReadToEndAsync() |> Async.AwaitTask
         let m = Regex.Match(html, """http://s3.amazonaws.com/pillowfortmedia/settings/avatars/[^"]+""")
-        return if m.Success then m.Value else defaultAvatarUrl
+        return if m.Success then Some m.Value else None
     }
 
     member __.AsyncGetPosts username page = async {
@@ -189,7 +192,7 @@ type PillowfortClient() =
     }
     
     member this.WhoamiAsync() = Async.StartAsTask this.AsyncWhoami
-    member this.GetAvatarAsync() = Async.StartAsTask this.AsyncGetAvatar
+    member this.GetAvatarAsync() = Async.StartAsTask (this.AsyncGetAvatar |> asyncOptionDefault null)
     member this.GetPostsAsync username page = Async.StartAsTask (this.AsyncGetPosts username page)
     member this.SubmitPostAsync post = Async.StartAsTask (this.AsyncSubmitPost post) :> Task
     member this.DeletePostAsync id = Async.StartAsTask (this.AsyncDeletePost id) :> Task
