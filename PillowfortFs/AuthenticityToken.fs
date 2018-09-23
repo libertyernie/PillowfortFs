@@ -5,7 +5,7 @@ open System.Net
 open System.Text.RegularExpressions
 
 let get_authenticity_token (url: string) cookies = async {
-    let req = WebRequest.CreateHttp(url, CookieContainer = cookies, UserAgent = "PillowfortFs/0.1 (https://github.com/libertyernie)")
+    let req = WebRequest.CreateHttp(url, CookieContainer = cookies, UserAgent = UserAgent.String)
 
     use! response = req.AsyncGetResponse()
     use sr = new StreamReader(response.GetResponseStream())
