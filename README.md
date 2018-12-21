@@ -2,6 +2,8 @@
 
 An F# / .NET library for logging into https://pillowfort.io.
 
+**For the time being, any development on this library will occur in the [CrosspostSharp](https://github.com/libertyernie/CrosspostSharp) repo.**
+
 Features:
 * Scraping username and avatar
 * Listing posts by user
